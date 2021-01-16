@@ -129,14 +129,14 @@ if __name__ == '__main__' :
 
     # Simulation of noisy sine
     tmax = 10 # s
-    sr = 44.1e3
+    sr = int(44.1e3)
     time = np.arange(0,tmax, 1/sr)
     nb_channel = 2 # stereo
     noise = np.random.randn(int(tmax*sr), nb_channel)
     noise = (noise/np.max(noise))
     signal = np.zeros((int(tmax*sr), nb_channel ))
-    signal[:,0] = np.sin(2*np.pi*200*time)
-    signal[:,1] = np.sin(2*np.pi*100*time)
+    signal[:,0] = 0.2*np.sin(2*np.pi*200*time)
+    signal[:,1] = 0.2*np.sin(2*np.pi*100*time)
     signal += noise
 
     #parametres
@@ -148,7 +148,6 @@ if __name__ == '__main__' :
     ## load noise
     # sr, noise_ref = wav.read('/Users/nicolasnicolas/Desktop/Test_soft/20190611-195122_595_1008.wav')
     # noise_ref = noise/2**15 # 16 bits to -1 1.
-    nb_ch = len(noise_ref[0,:])
 
     ## estimation bruit
     noise_ref = noise[0:int(2*sr),:] # 2 first seconds of the noise
@@ -165,8 +164,8 @@ if __name__ == '__main__' :
     for ch in range(nb_ch):
         out[:,ch], _ = Desbruitage(signal[:,ch],sr,Pw_noise[ch],alpha,win,over,nfft,oneside)
 
-    wav.write('denoise_signal.wav', sr, np.int16(out*2**16))
-    wav.write('initial_signal.wav', sr, np.int16(signal*2**16))
+    wav.write('denoise_signal.wav', sr, np.int16(0.9*(out/np.max(out))*2**15))
+    wav.write('initial_signal.wav', sr, np.int16(0.9*(signal/np.max(signal))*2**15))
 
 
     plt.figure()
@@ -174,8 +173,8 @@ if __name__ == '__main__' :
     plt.plot(time, signal[:,1], label='noisy ch2')
     plt.plot(time, out[:,0], label='denoise ch1')
     plt.plot(time, -out[:,1], label='denoise ch2')
-    plt.plot(time, np.sin(2*np.pi*200*time), label='initial ch1')
-    plt.plot(time, np.sin(2*np.pi*100*time), label='initial ch2')
+    plt.plot(time, 0.2*np.sin(2*np.pi*200*time), label='initial ch1')
+    plt.plot(time, 0.2*np.sin(2*np.pi*100*time), label='initial ch2')
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude (-)')
     plt.legend()
