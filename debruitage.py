@@ -54,7 +54,7 @@ def Noise_sup(X,b,alpha):
         Rpost = (X[i,k]**2/b[i]**2)-1
         Rpost_2 = Rpost
         Rpost_2[Rpost_2 < 0] = 0 # R_post with positive value
-        Rpost[Rpost == -1] = 0.9999999999999999999 # decimal proplem
+        Rpost[Rpost == -1] = -1 + 1e-12 # decimal proplem
         Rprio = (1 - alpha)*(Rpost_2) + alpha*(X[i,k-1]**2/b[i]**2)
         Gk[:,k] = (Rprio + np.sqrt(Rprio**2 +2*(1+Rprio)*(Rprio/(1+Rpost))))/(2*(1+Rprio))
         X[:,k] = X[:,k] * Gk[:,k]
